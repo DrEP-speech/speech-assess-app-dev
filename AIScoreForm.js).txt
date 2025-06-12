@@ -1,0 +1,43 @@
+import React, { useState } from "react";
+import axios from "axios";
+
+const AIScoreForm = () => {
+  const [transcript, setTranscript] = useState("");
+  const [result, setResult] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const handleScore = async () => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/hooks/score", { transcript });
+      setResult(res.data);
+      setMessage("✅ Score received");
+    } catch (error) {
+      console.error("AI Score error:", error);
+      setMessage("❌ Failed to get score");
+    }
+  };
+
+  return (
+    <div style={{ padding: "1rem", border: "1px solid gray", marginTop: "1rem" }}>
+      <h3>AI Speech Scoring</h3>
+      <textarea
+        rows="4"
+        placeholder="Paste or type transcript here..."
+        value={transcript}
+        onChange={(e) => setTranscript(e.target.value)}
+        style={{ width: "100%" }}
+      />
+      <button onClick={handleScore}>Get AI Score</button>
+      <p>{message}</p>
+      {result && (
+        <div>
+          <p><strong>Transcript:</strong> {result.transcript}</p>
+          <p><strong>Score:</strong> {result.score}</p>
+          <p><strong>Feedback:</strong> {result.feedback}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AIScoreForm;
