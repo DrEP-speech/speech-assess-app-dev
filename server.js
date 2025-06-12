@@ -34,6 +34,10 @@ const scoreSchema = new mongoose.Schema({
 });
 
 const Score = mongoose.model("Score", scoreSchema);
+const aiScoreRoute = require("./routes/aiScore");
+app.use("/api/ai", aiScoreRoute);
+const transcribeHook = require('./api/hooks/transcribeSpeech');
+app.use('/api/hooks', transcribeHook);
 
 // Routes
 app.get("/", (req, res) => {
@@ -65,6 +69,10 @@ app.use('/api/auth', authRoutes);
 const scoresRoute = require('./routes/scores');
 app.use('/api/scores', scoresRoute);
     res.json(savedScore);
+const scoreHook = require('./api/hooks/scoreSpeech');
+app.use('/api/hooks', scoreHook);
+const scoreHook = require("./api/hooks/scoreSpeech");
+app.use("/api/hooks", scoreHook);
   } catch (err) {
     res.status(500).json({ error: "Failed to submit score" });
   }

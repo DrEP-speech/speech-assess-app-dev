@@ -1,43 +1,42 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const AIScoreForm = () => {
+export default function AIScoreForm() {
   const [transcript, setTranscript] = useState("");
-  const [result, setResult] = useState(null);
-  const [message, setMessage] = useState("");
+  const [aiScore, setAIScore] = useState("");
 
-  const handleScore = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/hooks/score", { transcript });
-      setResult(res.data);
-      setMessage("✅ Score received");
-    } catch (error) {
-      console.error("AI Score error:", error);
-      setMessage("❌ Failed to get score");
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setMessage("Scoring in progress...");
+
+  try {
+    const response = await axios.post("http://localhost:5000/api/ai/score", {
+      userInput: formData.userInput,
+    });
+
+    if (response.data.scoreFeedback) {
+      setMessage(response.data.scoreFeedback);
+    } else {
+      setMessage("No feedback received.");
     }
-  };
-
-  return (
-    <div style={{ padding: "1rem", border: "1px solid gray", marginTop: "1rem" }}>
-      <h3>AI Speech Scoring</h3>
-      <textarea
-        rows="4"
-        placeholder="Paste or type transcript here..."
-        value={transcript}
-        onChange={(e) => setTranscript(e.target.value)}
-        style={{ width: "100%" }}
-      />
-      <button onClick={handleScore}>Get AI Score</button>
-      <p>{message}</p>
-      {result && (
-        <div>
-          <p><strong>Transcript:</strong> {result.transcript}</p>
-          <p><strong>Score:</strong> {result.score}</p>
-          <p><strong>Feedback:</strong> {result.feedback}</p>
-        </div>
-      )}
-    </div>
-  );
+  } catch (error) {
+    console.error("Error scoring:", error);
+    setMessage("❌ Error during scoring.");
+  }
 };
 
-export default AIScoreForm;
+  return (
+    <div>
+      <h2>AI Speech Scoring</h2>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={transcript}
+          onChange={(e) => setTranscript(e.target.value)}
+          placeholder="Paste speech transcript here..."
+        />
+        <button type="submit">Submit for AI Scoring</button>
+      </form>
+      {aiScore && <p><strong>AI Score:</strong> {aiScore}</p>}
+    </div>
+  );
+}
